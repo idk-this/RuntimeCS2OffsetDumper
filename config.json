@@ -1,0 +1,259 @@
+{
+  "modules": [
+    {
+      "name": "client.dll",
+      "patterns": [
+        {
+          "name": "dwCSGOInput",
+          "sig": "48 89 05 ? ? ? ? 0F 57 C0 0F 11 05",
+          "offset": 3,
+          "size": 7,
+          "rip": true,
+          "sub_name": "dwViewAngles",
+          "sub_sig": "F2 42 0F 10 84 28 ? ? ? ?",
+          "sub_offset": 6
+        },
+        {
+          "name": "dwEntityList",
+          "sig": "48 89 0D ? ? ? ? E9 ? ? ? ? CC",
+          "offset": 3,
+          "size": 7,
+          "rip": true
+        },
+        {
+          "name": "dwGameEntitySystem",
+          "sig": "48 8B 1D ? ? ? ? 48 89 1D ? ? ? ? 4C 63 B3",
+          "offset": 3,
+          "size": 7,
+          "rip": true
+        },
+        {
+          "name": "dwGameEntitySystem_highestEntityIndex",
+          "sig": "FF 81 ? ? ? ? 48 85 D2",
+          "offset": 2,
+          "size": 4,
+          "rip": false
+        },
+        {
+          "name": "dwGameRules",
+          "sig": "48 89 1D ? ? ? ? FF 15 ? ? ? ? 84 C0",
+          "offset": 3,
+          "size": 7,
+          "rip": true
+        },
+        {
+          "name": "dwGlobalVars",
+          "sig": "48 89 15 ? ? ? ? 48 89 42",
+          "offset": 3,
+          "size": 7,
+          "rip": true
+        },
+        {
+          "name": "dwGlowManager",
+          "sig": "48 8B 05 ? ? ? ? C3 CC CC CC CC CC CC CC CC 8B 41 38",
+          "offset": 3,
+          "size": 7,
+          "rip": true
+        },
+        {
+          "name": "dwLocalPlayerController",
+          "sig": "48 8B 05 ? ? ? ? 41 89 BE",
+          "offset": 3,
+          "size": 7,
+          "rip": true
+        },
+        {
+          "name": "dwPlantedC4",
+          "sig": "48 8B 15 ? ? ? ? 41 FF C0 48 8D 4C 24 ? 44 89 05",
+          "offset": 3,
+          "size": 7,
+          "rip": true
+        },
+        {
+          "name": "dwPrediction",
+          "sig": "CC CC CC CC 48 8D 05 ? ? ? ? C3 CC CC CC CC CC CC CC CC 40 53 56 41 54 41 56 41 57",
+          "offset": 7,
+          "size": 11,
+          "rip": true,
+          "sub_name": "dwLocalPlayerPawn",
+          "sub_sig": "4C 39 B6 ? ? ? ? 74 ? 44 88 BE",
+          "sub_offset": 3
+        },
+        {
+          "name": "dwSensitivity",
+          "sig": "48 8D 0D ? ? ? ? 66 0F 6E CD",
+          "offset": 3,
+          "size": 15,
+          "rip": true
+        },
+        {
+          "name": "dwSensitivity_sensitivity",
+          "sig": "48 8D 7E ? 48 0F BA E0 ? 72 ? 85 D2 49 0F 4F FF",
+          "offset": 3,
+          "size": 1,
+          "rip": false,
+          "read_size": 1
+        },
+        {
+          "name": "dwViewMatrix",
+          "sig": "48 8D 0D ? ? ? ? 48 C1 E0 06",
+          "offset": 3,
+          "size": 7,
+          "rip": true
+        },
+        {
+          "name": "dwViewRender",
+          "sig": "48 89 05 ? ? ? ? 48 8B C8 48 85 C0",
+          "offset": 3,
+          "size": 7,
+          "rip": true
+        },
+        {
+          "name": "dwWeaponC4",
+          "sig": "48 8B 15 ? ? ? ? 48 8B 5C 24 ? FF C0 89 05 ? ? ? ? 48 8B C6 48 89 34 EA 80 BE",
+          "offset": 3,
+          "size": 7,
+          "rip": true
+        }
+      ]
+    },
+    {
+      "name": "engine2.dll",
+      "patterns": [
+        {
+          "name": "dwBuildNumber",
+          "sig": "89 05 ? ? ? ? 48 8D 0D ? ? ? ? FF 15 ? ? ? ? 48 8B 0D",
+          "offset": 2,
+          "size": 6,
+          "rip": true
+        },
+        {
+          "name": "dwNetworkGameClient",
+          "sig": "48 89 3D ? ? ? ? FF 87",
+          "offset": 3,
+          "size": 7,
+          "rip": true
+        },
+        {
+          "name": "dwNetworkGameClient_clientTickCount",
+          "sig": "8B 81 78 03 00 00 C3 CC CC CC CC CC CC CC CC CC 8B 81 4C 02 00 00 C3",
+          "offset": 2,
+          "size": 4,
+          "rip": false
+        },
+        {
+          "name": "dwNetworkGameClient_deltaTick",
+          "sig": "4C 8D B7 ? ? ? ? 4C 89 7C 24",
+          "offset": 3,
+          "size": 4,
+          "rip": false
+        },
+        {
+          "name": "dwNetworkGameClient_isBackgroundMap",
+          "sig": "0F B6 81 1F 14 2C 00 C3 CC CC CC CC CC CC CC CC 0F B6 81 1E 14 2C 00 C3",
+          "offset": 3,
+          "size": 4,
+          "rip": false
+        },
+        {
+          "name": "dwNetworkGameClient_localPlayer",
+          "sig": "42 8B 94 D3 ? ? ? ? 5B 49 FF E3 32 C0 5B C3",
+          "offset": 4,
+          "size": 4,
+          "rip": false
+        },
+        {
+          "name": "dwNetworkGameClient_maxClients",
+          "sig": "8B 81 ? ? ? ? C3 ? ? ? ? ? ? ? ? ? 8B 81 ? ? ? ? C3 ? ? ? ? ? ? ? ? ? 8B 81",
+          "offset": 2,
+          "size": 4,
+          "rip": false
+        },
+        {
+          "name": "dwNetworkGameClient_serverTickCount",
+          "sig": "CC CC CC CC 8B 81 4C 02 00 00 C3 CC CC CC CC CC CC CC CC CC 83 B9",
+          "offset": 6,
+          "size": 4,
+          "rip": false
+        },
+        {
+          "name": "dwNetworkGameClient_signOnState",
+          "sig": "44 8B 81 ? ? ? ? 48 8D 0D",
+          "offset": 3,
+          "size": 4,
+          "rip": false
+        },
+        {
+          "name": "dwWindowHeight",
+          "sig": "8B 05 ? ? ? ? 89 03",
+          "offset": 2,
+          "size": 6,
+          "rip": true
+        },
+        {
+          "name": "dwWindowWidth",
+          "sig": "8B 05 ? ? ? ? 89 07",
+          "offset": 2,
+          "size": 6,
+          "rip": true
+        }
+      ]
+    },
+    {
+      "name": "inputsystem.dll",
+      "patterns": [
+        {
+          "name": "dwInputSystem",
+          "sig": "48 89 05 ? ? ? ? 33 C0",
+          "offset": 3,
+          "size": 7,
+          "rip": true
+        }
+      ]
+    },
+    {
+      "name": "matchmaking.dll",
+      "patterns": [
+        {
+          "name": "dwGameTypes",
+          "sig": "48 8D 0D ? ? ? ? FF 90",
+          "offset": 3,
+          "size": 7,
+          "rip": true
+        }
+      ]
+    },
+    {
+      "name": "soundsystem.dll",
+      "patterns": [
+        {
+          "name": "dwSoundSystem",
+          "sig": "48 8D 05 ? ? ? ? C3 CC CC CC CC CC CC CC CC 48 89 15",
+          "offset": 3,
+          "size": 7,
+          "rip": true
+        },
+        {
+          "name": "dwSoundSystem_engineViewData",
+          "sig": "0F 11 47 ? 0F 10 4E ? 0F 11 8F",
+          "offset": 3,
+          "size": 1,
+          "rip": false,
+          "read_size": 1
+        }
+      ]
+    },
+    {
+      "name": "schemasystem.dll",
+      "patterns": [
+        {
+          "name": "dwSchemaSystem",
+          "sig": "4C 8D 35 ? ? ? ? 0F 28 45",
+          "offset": 3,
+          "size": 7,
+          "rip": true
+        }
+      ]
+    }
+  ]
+}
