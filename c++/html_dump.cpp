@@ -79,36 +79,38 @@ static std::string BuildHTML(const std::vector<GlobalOff>& globals, const std::v
 
     for (auto& s : schema) {
         idx[s.module][s.className].push_back(&s);
-        classToModule[s.className] = s.module;
         modsWithClasses.insert(s.module);
+        if (classToModule.find(s.className) == classToModule.end())
+            classToModule[s.className] = s.module;
     }
 
-    auto formatType = [&](const std::string& type) {
+    auto formatType = [&](const std::string& type, const std::string& currentMod) {
         if (type.empty() || type == "unk") return std::string("");
-        std::string res = type;
-        for (auto const& [name, mod] : classToModule) {
-            size_t p = res.find(name);
-            if (p != std::string::npos) {
-                bool pre = (p == 0 || (!isalnum((unsigned char)res[p - 1]) && res[p - 1] != '_'));
-                bool post = (p + name.size() == res.size() || (!isalnum((unsigned char)res[p + name.size()]) && res[p + name.size()] != '_'));
-                if (pre && post) {
-                    std::string link = "<span class='lnk' style='cursor:pointer;color:var(--primary);text-decoration:underline;' onclick=\"navCls('" + JSE(Slug(mod, name)) + "')\">" + HE(name) + "</span>";
-                    res.replace(p, name.size(), link);
-                    break;
-                }
-            }
+
+        for (auto const& [name, dummy] : classToModule) {
+            size_t p = type.find(name);
+            if (p == std::string::npos) continue;
+
+            bool pre = (p == 0 || (!isalnum((unsigned char)type[p - 1]) && type[p - 1] != '_'));
+            bool post = (p + name.size() == type.size() || (!isalnum((unsigned char)type[p + name.size()]) && type[p + name.size()] != '_'));
+            if (!pre || !post) continue;
+
+            std::string targetMod = (idx[currentMod].count(name)) ? currentMod : classToModule[name];
+
+            return type.substr(0, p) +
+                "<span class='lnk' style='cursor:pointer;color:var(--primary);text-decoration:underline;' onclick=\"navCls('" + JSE(Slug(targetMod, name)) + "')\">" + HE(name) + "</span>" +
+                type.substr(p + name.size());
         }
-        return res;
+        return type;
         };
 
     std::ostringstream globRows;
     for (auto& g : globals) {
-        std::string h = ToHex(g.value);
-        std::string c = "CS2Dumper::GetOffset(\"" + g.name + "\")";
+        std::string h = ToHex(g.value), c = "CS2Dumper::GetOffset(\"" + g.name + "\")";
         globRows << "<tr><td>" << HE(g.name) << "</td><td>" << HE(g.module) << "</td><td class='c-hex'>" << HE(h) << "</td>"
             << "<td><div class='cg'>"
-            << "<button class='icb' title='Copy Hex' onclick=\"" << HE("cp(this,'" + JSE(h) + "','Hex')") << "\"><svg viewBox='0 0 24 24'><path d='M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z'/></svg></button>"
-            << "<button class='icb' title='Copy Call' onclick=\"" << HE("cp(this,'" + JSE(c) + "','Call')") << "\"><svg viewBox='0 0 24 24'><path d='M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z'/></svg></button>"
+            << "<button class='icb' onclick=\"" << HE("cp(this,'" + JSE(h) + "','Hex')") << "\"><svg viewBox='0 0 24 24'><path d='M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z'/></svg></button>"
+            << "<button class='icb' onclick=\"" << HE("cp(this,'" + JSE(c) + "','Call')") << "\"><svg viewBox='0 0 24 24'><path d='M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z'/></svg></button>"
             << "</div></td></tr>";
     }
 
@@ -118,35 +120,26 @@ static std::string BuildHTML(const std::vector<GlobalOff>& globals, const std::v
     std::sort(sorted.begin(), sorted.end());
 
     for (auto& [m, c] : sorted) {
-        std::string sid = Slug(m, c);
-        cards << "<div class='card' id='card-" << HE(sid) << "' data-mod='" << HE(m) << "' data-cls='" << HE(c) << "'>"
+        cards << "<div class='card' id='card-" << HE(Slug(m, c)) << "' data-mod='" << HE(m) << "' data-cls='" << HE(c) << "'>"
             << "<div class='ch' onclick='tog2(this.parentElement)'><span class='ch-name'>" << HE(c) << "</span><span class='ch-mod'>" << HE(m) << "</span></div>"
             << "<div class='cb'><table class='ft'><thead><tr><th>Field</th><th>Type</th><th>Offset</th><th>Copy</th></tr></thead><tbody>";
 
         for (auto* f : idx[m][c]) {
-            std::string h = ToHex(f->value);
-            std::string call = "CS2Dumper::GetSchema(\"" + f->module + "\", \"" + f->className + "\", \"" + f->fieldName + "\")";
-            std::string link = "?module=" + f->module + "&class=" + f->className + "&field=" + f->fieldName;
-
-            cards << "<tr data-field='" << HE(f->fieldName) << "'><td>" << HE(f->fieldName) << "</td><td><span class='tb'>" << formatType(f->type) << "</span></td><td class='c-hex'>" << HE(h) << "</td>"
+            std::string h = ToHex(f->value), call = "CS2Dumper::GetSchema(\"" + f->module + "\", \"" + f->className + "\", \"" + f->fieldName + "\")",
+                link = "?module=" + f->module + "&class=" + f->className + "&field=" + f->fieldName;
+            cards << "<tr><td>" << HE(f->fieldName) << "</td><td><span class='tb'>" << formatType(f->type, m) << "</span></td><td class='c-hex'>" << HE(h) << "</td>"
                 << "<td><div class='cg'>"
-                << "<button class='icb' title='Copy Hex' onclick=\"" << HE("cp(this,'" + JSE(h) + "','Hex')") << "\"><svg viewBox='0 0 24 24'><path d='M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z'/></svg></button>"
-                << "<button class='icb' title='Copy Call' onclick=\"" << HE("cp(this,'" + JSE(call) + "','Call')") << "\"><svg viewBox='0 0 24 24'><path d='M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z'/></svg></button>"
-                << "<button class='icb' title='Copy Link' onclick=\"" << HE("cp(this,window.location.origin + window.location.pathname + '" + JSE(link) + "','Link')") << "\"><svg viewBox='0 0 24 24'><path d='M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z'/></svg></button>"
+                << "<button class='icb' onclick=\"" << HE("cp(this,'" + JSE(h) + "','Hex')") << "\"><svg viewBox='0 0 24 24'><path d='M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z'/></svg></button>"
+                << "<button class='icb' onclick=\"" << HE("cp(this,'" + JSE(call) + "','Call')") << "\"><svg viewBox='0 0 24 24'><path d='M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z'/></svg></button>"
+                << "<button class='icb' onclick=\"" << HE("cp(this,window.location.origin + window.location.pathname + '" + JSE(link) + "','Link')") << "\"><svg viewBox='0 0 24 24'><path d='M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z'/></svg></button>"
                 << "</div></td></tr>";
         }
         cards << "</tbody></table></div></div>";
     }
 
-    std::ostringstream modChips;
-    for (auto& m : modsWithClasses) {
-        modChips << "<button class='chip' data-mod='" << HE(m) << "' onclick='filterMod(this)'>" << HE(m) << "</button>";
-    }
-
-    std::ostringstream nav;
-    for (auto& [m, c] : sorted) {
-        nav << "<div class='ni' onclick=\"navCls('" << JSE(Slug(m, c)) << "')\" data-cls='" << HE(c) << "'>" << HE(c) << "</div>";
-    }
+    std::ostringstream modChips, nav;
+    for (auto& m : modsWithClasses) modChips << "<button class='chip' data-mod='" << HE(m) << "' onclick='filterMod(this)'>" << HE(m) << "</button>";
+    for (auto& [m, c] : sorted) nav << "<div class='ni' onclick=\"navCls('" << JSE(Slug(m, c)) << "')\" data-cls='" << HE(c) << "'>" << HE(c) << "</div>";
 
     std::ifstream t("dump_template.html");
     if (!t.is_open()) return "";
@@ -167,7 +160,6 @@ static std::string BuildHTML(const std::vector<GlobalOff>& globals, const std::v
 
     return h;
 }
-
 int main() {
     static ConsoleLogger l;
     CS2Dumper::SetLogger(&l);
