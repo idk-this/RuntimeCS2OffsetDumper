@@ -8,7 +8,7 @@
 #include <map>
 #include <set>
 #include <vector>
-#include "json.h"
+#include "json.hpp"
 #include "CS2Dumper.hpp"
 
 using json = nlohmann::json;
@@ -127,7 +127,7 @@ static std::string BuildHTML(const std::vector<GlobalOff>& globals, const std::v
         for (auto* f : idx[m][c]) {
             std::string h = ToHex(f->value), call = "CS2Dumper::GetSchema(\"" + f->module + "\", \"" + f->className + "\", \"" + f->fieldName + "\")",
                 link = "?module=" + f->module + "&class=" + f->className + "&field=" + f->fieldName;
-            cards << "<tr><td>" << HE(f->fieldName) << "</td><td><span class='tb'>" << formatType(f->type, m) << "</span></td><td class='c-hex'>" << HE(h) << "</td>"
+            cards << "<tr data-field=\"" << f->fieldName << "\"><td>" << HE(f->fieldName) << "</td><td><span class='tb'>" << formatType(f->type, m) << "</span></td><td class='c-hex'>" << HE(h) << "</td>"
                 << "<td><div class='cg'>"
                 << "<button class='icb' onclick=\"" << HE("cp(this,'" + JSE(h) + "','Hex')") << "\"><svg viewBox='0 0 24 24'><path d='M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z'/></svg></button>"
                 << "<button class='icb' onclick=\"" << HE("cp(this,'" + JSE(call) + "','Call')") << "\"><svg viewBox='0 0 24 24'><path d='M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z'/></svg></button>"
@@ -170,8 +170,20 @@ int main() {
     for (auto& m : d["modules"]) {
         CS2Dumper::ModuleConfig mc; mc.name = m["name"];
         for (auto& p : m["patterns"]) {
-            CS2Dumper::Pattern pt; pt.name = p["name"]; pt.sig = p["sig"]; pt.offset = p["offset"];
-            pt.size = p["size"]; pt.rip = p["rip"]; mc.patterns.push_back(pt);
+            CS2Dumper::Pattern pt;
+            pt.name = p["name"];
+            pt.sig = p["sig"];
+            pt.offset = p["offset"];
+            pt.size = p["size"];
+            pt.rip = p["rip"];
+            if (p.contains("read_size"))
+                pt.read_size = p["read_size"];
+            if (p.contains("sub_sig")) {
+                pt.sub_name = p["sub_name"];
+                pt.sub_sig = p["sub_sig"];
+                pt.sub_offset = p["sub_offset"];
+            }
+            mc.patterns.push_back(pt);
         }
         cfg.push_back(mc);
     }
