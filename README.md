@@ -1,6 +1,10 @@
 # CS2Dumper 🚀
 
 **CS2Dumper** is a cross-language automated offset and schema extraction tool for Counter-Strike 2. It provides a robust way to handle memory offsets and dynamic `SchemaSystem` parsing using signature scanning.
+---
+🔗 Latest Offsets
+You can find the latest generated offsets here: **[RuntimeCS2OffsetDumper](https://idk-this.github.io/RuntimeCS2OffsetDumper/)**
+---
 
 ## ✨ Key Features
 
