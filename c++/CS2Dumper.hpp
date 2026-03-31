@@ -119,11 +119,12 @@ public:
                     mod.base = reinterpret_cast<uintptr_t>(me.modBaseAddr);
                     mod.size = me.modBaseSize;
                     if (!s_mem->ReadModuleBuffer(mod.base, mod.size, mod.buffer)) {
-                        s_log->Log(LogLevel::Error, "Read error: " + mName);
+                        if (s_log) s_log->Log(LogLevel::Error, "Read error: " + mName);
                         continue;
                     }
                     s_mod_configs[mName] = cfg;
-                    s_log->Log(LogLevel::Info, "Module loaded: " + mName);
+                    
+                    if (s_log) s_log->Log(LogLevel::Info, "Module loaded: " + mName);
                 }
             } while (Module32Next(hSnap, &me));
         }
@@ -136,7 +137,7 @@ public:
             auto it = mod.offsets.find(name);
             if (it != mod.offsets.end()) return it->second;
         }
-        s_log->Log(LogLevel::Error, "Offset NOT FOUND: " + name);
+        if (s_log) s_log->Log(LogLevel::Error, "Offset NOT FOUND: " + name);
         return 0;
     }
     static const std::map<std::string, ModuleData>& GetModules() { return s_modules; }
@@ -144,13 +145,13 @@ public:
     static uintptr_t GetSchema(const std::string& module, const std::string& className, const std::string& fieldName) {
         std::lock_guard g(s_mutex);
         auto m = s_schema_db.find(module);
-        if (m == s_schema_db.end()) { s_log->Log(LogLevel::Error, "Schema Mod Missing: " + module); return 0; }
+        if (m == s_schema_db.end()) { if (s_log) s_log->Log(LogLevel::Error, "Schema Mod Missing: " + module); return 0; }
 
         auto c = m->second.find(className);
-        if (c == m->second.end()) { s_log->Log(LogLevel::Error, "Schema Class Missing: " + className); return 0; }
+        if (c == m->second.end()) { if (s_log) s_log->Log(LogLevel::Error, "Schema Class Missing: " + className); return 0; }
 
         auto f = c->second.fields.find(fieldName);
-        if (f == c->second.fields.end()) { s_log->Log(LogLevel::Error, "Schema Field Missing: " + fieldName + " in " + className); return 0; }
+        if (f == c->second.fields.end()) { if (s_log) s_log->Log(LogLevel::Error, "Schema Field Missing: " + fieldName + " in " + className); return 0; }
 
         return static_cast<uintptr_t>(static_cast<uint32_t>(f->second.offset));
     }
@@ -162,7 +163,7 @@ public:
                 res.Paterns++;
                 size_t off = FindPattern(mod.buffer, p.sig);
                 if (off == std::string::npos) {
-                    s_log->Log(LogLevel::Warning, "Pattern Fail: " + p.name);
+                    if (s_log) s_log->Log(LogLevel::Warning, "Pattern Fail: " + p.name);
                     continue;
                 }
                 uintptr_t val = p.rip ? (off + p.size + *reinterpret_cast<const int32_t*>(&mod.buffer[off + p.offset])) :
