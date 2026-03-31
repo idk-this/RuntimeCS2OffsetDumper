@@ -6,7 +6,6 @@
 <title>CS2 Offset Dump</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
 <style>
-/* ══ MD3 dark tokens ══ */
 :root{
   --bg:          #0e0e14;
   --surf:        #1a1a24;
@@ -17,7 +16,7 @@
   --on-surf-var: #c8c4dc;
   --outline:     #938f9e;
   --outline-var: #2e2b3d;
-  --primary:     #cfbcff;   /* M3 purple 80 */
+  --primary:     #cfbcff;
   --on-primary:  #21005e;
   --prim-cont:   #3a0099;
   --secondary:   #cbc2dc;
@@ -39,10 +38,110 @@
 html,body{height:100%;overflow:hidden;}
 body{background:var(--bg);color:var(--on-surf);font-family:var(--sans);font-size:14px;line-height:1.5;}
 
-/* ── layout ── */
-#app{display:flex;height:100vh;}
+#app{display:flex;height:100vh;width:100%;position:relative;overflow:hidden;}
 
-/* ══ DRAWER ══ */
+@media (max-width: 1024px) {
+  #drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    height: 100%;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    z-index: 1000;
+    width: 272px;
+    border-radius: 0;
+    box-shadow: var(--elev3);
+    flex-shrink: 0;
+  }
+  #drawer.open {
+    transform: translateX(0);
+  }
+  #main {
+    width: 100%;
+    min-width: 0;
+    flex: 1;
+  }
+  #top-bar {
+    padding-left: 12px;
+  }
+  .menu-btn {
+    display: flex;
+  }
+  .chips {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    flex-shrink: 1;
+    min-width: 0;
+    margin-left: auto;
+    gap: 7px;
+    padding-bottom: 4px;
+  }
+  .chip {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+  #content {
+    padding: 14px 12px;
+  }
+  .toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .toolbar .sf {
+    min-width: 0;
+    width: 100%;
+  }
+  .rc {
+    margin-left: 0;
+  }
+}
+@media (max-width: 1024px) {
+  .gt, .ft {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .gt thead, .ft thead {
+    display: table;
+    width: 100%;
+  }
+  .gt tbody tr, .ft tbody tr {
+    display: table-row;
+  }
+  .gt tbody td, .ft tbody td, .gt th, .ft th {
+    white-space: nowrap;
+  }
+}
+@media (min-width: 1025px) {
+    .chips {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  margin-right: 8px;
+  border-radius: var(--r-s);
+  color: var(--on-surf);
+  transition: background var(--dur);
+}
+.menu-btn:hover {
+  background: var(--surf-var);
+}
+.menu-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
 #drawer{
   width:272px;flex-shrink:0;
   background:var(--surf);
@@ -56,7 +155,6 @@ body{background:var(--bg);color:var(--on-surf);font-family:var(--sans);font-size
 .dh-title{font-size:17px;font-weight:700;color:var(--primary);letter-spacing:.3px;}
 .dh-sub{font-size:10px;color:var(--outline);font-family:var(--mono);letter-spacing:1px;}
 
-/* search */
 .d-search{padding:10px 14px;border-bottom:1px solid var(--outline-var);}
 .sf{display:flex;align-items:center;gap:8px;background:var(--surf-var);border-radius:var(--r-xl);padding:8px 14px;border:1.5px solid transparent;transition:border-color var(--dur);}
 .sf:focus-within{border-color:var(--primary);}
@@ -64,7 +162,6 @@ body{background:var(--bg);color:var(--on-surf);font-family:var(--sans);font-size
 .sf input{flex:1;background:none;border:none;outline:none;font-family:var(--sans);font-size:13px;color:var(--on-surf);}
 .sf input::placeholder{color:var(--outline);}
 
-/* nav list */
 #nav-list{flex:1;overflow-y:auto;padding:6px 12px 12px;}
 #nav-list::-webkit-scrollbar{width:3px;}
 #nav-list::-webkit-scrollbar-thumb{background:var(--outline-var);border-radius:2px;}
@@ -75,10 +172,8 @@ body{background:var(--bg);color:var(--on-surf);font-family:var(--sans);font-size
 .ni svg{flex-shrink:0;}
 .ni .badge{margin-left:auto;font-size:10px;font-family:var(--mono);background:var(--outline-var);color:var(--outline);padding:2px 7px;border-radius:10px;}
 
-/* ══ MAIN ══ */
-#main{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+#main{flex:1;overflow:hidden;display:flex;flex-direction:column;min-width:0;}
 
-/* top bar */
 #top-bar{
   height:62px;flex-shrink:0;
   padding:0 24px;
@@ -86,29 +181,27 @@ body{background:var(--bg);color:var(--on-surf);font-family:var(--sans);font-size
   background:var(--surf);
   border-bottom:1px solid var(--outline-var);
   box-shadow:var(--elev1);
+  min-width:0;
+  overflow:hidden;
 }
-#top-bar h1{font-size:20px;font-weight:700;color:var(--on-surf);}
-.chips{display:flex;gap:7px;margin-left:auto;flex-wrap:wrap;}
+#top-bar h1{font-size:20px;font-weight:700;color:var(--on-surf);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;}
+.chips{display:flex;gap:7px;margin-left:auto;}
 .chip{display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:var(--r-xl);border:1.5px solid var(--outline-var);font-size:12px;font-family:var(--sans);color:var(--on-surf-var);cursor:pointer;transition:all var(--dur);background:none;}
 .chip:hover{background:rgba(207,188,255,.07);border-color:var(--outline);}
 .chip.active{background:rgba(207,188,255,.12);border-color:var(--primary);color:var(--primary);}
 
-/* content */
 #content{flex:1;overflow-y:auto;padding:22px 26px;}
 #content::-webkit-scrollbar{width:5px;}
 #content::-webkit-scrollbar-thumb{background:var(--outline-var);border-radius:3px;}
 
-/* toolbar */
 .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
 .toolbar .sf{min-width:260px;}
 .rc{font-size:12px;color:var(--outline);margin-left:auto;}
 
-/* section header */
 .sh{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
 .sh-title{font-size:15px;font-weight:700;}
 .sh-count{font-size:10px;font-family:var(--mono);color:var(--outline);background:var(--surf-var);padding:2px 8px;border-radius:10px;}
 
-/* ══ MD3 CARD ══ */
 .card{background:var(--surf);border:1.5px solid var(--outline-var);border-radius:var(--r-l);margin-bottom:10px;overflow:hidden;transition:border-color var(--dur),box-shadow var(--dur);}
 .card:hover{border-color:var(--outline);box-shadow:var(--elev1);}
 .card.highlighted{border-color:var(--primary)!important;animation:hl .9s ease 2;}
@@ -125,7 +218,6 @@ body{background:var(--bg);color:var(--on-surf);font-family:var(--sans);font-size
 .cb{display:none;border-top:1px solid var(--outline-var);}
 .card.open .cb{display:block;}
 
-/* field table */
 .ft{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;}
 .ft thead th{padding:7px 16px;text-align:left;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--outline);border-bottom:1px solid var(--outline-var);background:var(--surf-cont);font-family:var(--sans);}
 .ft tbody tr{transition:background var(--dur);}
@@ -135,19 +227,16 @@ body{background:var(--bg);color:var(--on-surf);font-family:var(--sans);font-size
 .c-field{color:var(--on-surf);}
 .c-hex{color:var(--green);font-weight:700;}
 
-/* type badge */
 .tb{display:inline-flex;align-items:center;padding:2px 8px;border-radius:10px;font-size:11px;background:rgba(80,20,120,.28);color:var(--tertiary);border:1px solid rgba(239,184,200,.15);}
 .tb.lnk{cursor:pointer;border-color:rgba(239,184,200,.35);transition:background var(--dur);}
 .tb.lnk:hover{background:rgba(80,20,120,.55);}
 
-/* ══ COPY GROUP ══ */
 .cg{display:flex;align-items:center;gap:5px;}
 .icb{display:inline-flex;align-items:center;justify-content:center;width:27px;height:27px;border-radius:var(--r-xs);border:none;background:none;cursor:pointer;color:var(--outline);transition:background var(--dur),color var(--dur);flex-shrink:0;}
 .icb:hover{background:var(--surf-var);color:var(--on-surf-var);}
 .icb.ok{color:var(--green);background:rgba(110,231,160,.1);}
 .icb svg{width:13px;height:13px;fill:currentColor;pointer-events:none;}
 
-/* copy menu */
 .cmw{position:relative;display:inline-flex;}
 .cmb{display:inline-flex;align-items:center;gap:3px;padding:4px 9px;border-radius:var(--r-xs);border:1px solid var(--outline-var);background:none;cursor:pointer;font-size:10px;font-family:var(--mono);color:var(--outline);transition:all var(--dur);}
 .cmb:hover{border-color:var(--outline);color:var(--on-surf-var);}
@@ -159,7 +248,6 @@ body{background:var(--bg);color:var(--on-surf);font-family:var(--sans);font-size
 .cmi-l{font-size:10px;color:var(--outline);font-family:var(--sans);margin-bottom:2px;}
 .cmi-v{font-size:11px;font-family:var(--mono);color:var(--on-surf);word-break:break-all;}
 
-/* ══ GLOBALS TABLE ══ */
 .gt{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px;}
 .gt th{padding:9px 16px;text-align:left;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--outline);border-bottom:1px solid var(--outline-var);background:var(--surf-cont);font-family:var(--sans);}
 .gt td{padding:9px 16px;border-bottom:1px solid rgba(46,43,61,.6);vertical-align:middle;}
@@ -169,17 +257,15 @@ body{background:var(--bg);color:var(--on-surf);font-family:var(--sans);font-size
 .g-mod{color:var(--outline);font-size:11px;}
 .g-hex{color:var(--green);font-weight:700;}
 
-/* ══ SNACKBAR ══ */
 #snack{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:#e5e1f0;color:#1a1a24;font-size:13px;font-family:var(--sans);padding:11px 20px;border-radius:var(--r-s);box-shadow:var(--elev3);transition:transform .3s cubic-bezier(.175,.885,.32,1.1),opacity .3s;opacity:0;z-index:9999;display:flex;align-items:center;gap:8px;pointer-events:none;}
 #snack.show{transform:translateX(-50%) translateY(0);opacity:1;}
 #snack svg{width:15px;height:15px;fill:#3a0099;flex-shrink:0;}
 
 .hidden{display:none!important;}
-.lnk { cursor: pointer; color: var(--primary); text-decoration: underline; transition: opacity 0.2s; }
-  .lnk:hover { opacity: 0.7; }
-  
-  .highlight-card { border: 2px solid var(--primary) !important; box-shadow: 0 0 15px var(--primary); }
-  .highlight-row { background: var(--prim-cont) !important; outline: 1px solid var(--primary); }
+.lnk{cursor:pointer;color:var(--primary);text-decoration:underline;transition:opacity 0.2s;}
+.lnk:hover{opacity:0.7;}
+.highlight-card{border:2px solid var(--primary)!important;box-shadow:0 0 15px var(--primary);}
+.highlight-row{background:var(--prim-cont)!important;outline:1px solid var(--primary);}
 </style>
 </head>
 <body>
@@ -190,8 +276,6 @@ body{background:var(--bg);color:var(--on-surf);font-family:var(--sans);font-size
 </div>
 
 <div id="app">
-
-<!-- ══ DRAWER ══ -->
 <nav id="drawer">
   <div class="dh">
     <div class="dh-icon">🎯</div>
@@ -208,12 +292,12 @@ body{background:var(--bg);color:var(--on-surf);font-family:var(--sans);font-size
   </div>
   <div id="nav-list">
     <span class="nl-label">Navigation</span>
-    <div class="ni active" id="ni-globals" onclick="showSec('globals')" >
+    <div class="ni active" id="ni-globals" onclick="showSec('globals'); closeDrawerMobile();">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" /></svg>
         Global Offsets
         <span class="badge">{{GLOBALS_COUNT}}</span>
     </div>
-    <div class="ni" id="ni-schema" onclick="showSec('schema')" >
+    <div class="ni" id="ni-schema" onclick="showSec('schema'); closeDrawerMobile();">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z" /></svg>
         Schema Classes
         <span class="badge">{{TOTAL_CLASSES}}</span>
@@ -225,9 +309,11 @@ body{background:var(--bg);color:var(--on-surf);font-family:var(--sans);font-size
   </div>
 </nav>
 
-<!-- ══ MAIN ══ -->
 <div id="main">
   <div id="top-bar">
+    <button class="menu-btn" id="menu-btn" aria-label="Menu">
+      <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    </button>
     <h1 id="top-title">Global Offsets</h1>
     <div class="chips" id="mod-chips" style="display:none">
       <button class="chip active" data-mod="all" onclick="filterMod(this)">All</button>
@@ -236,24 +322,25 @@ body{background:var(--bg);color:var(--on-surf);font-family:var(--sans);font-size
   </div>
 
   <div id="content">
-
-    <!-- ══ GLOBALS ══ -->
     <div id="sec-globals">
       <div class="sh">
         <span class="sh-title">Global Offsets</span>
         <span class="sh-count">{{GLOBALS_COUNT}} entries</span>
       </div>
       <div class="card open" style="overflow:hidden">
-        <table class="gt">
-          <thead><tr><th>Name</th><th>Module</th><th>Address</th><th>Copy</th></tr></thead>
-          <tbody>
-            {{GLOBALS_ROWS}}
-          </tbody>
-        </table>
+        <div style="overflow-x: auto;">
+          <table class="gt">
+            <thead>
+<th>Name</th><th>Module</th><th>Address</th><th>Copy</th>
+</thead>
+            <tbody>
+              {{GLOBALS_ROWS}}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
-    <!-- ══ SCHEMA ══ -->
     <div id="sec-schema" class="hidden">
       <div class="toolbar">
         <div class="sf" style="min-width:260px">
@@ -266,16 +353,45 @@ body{background:var(--bg);color:var(--on-surf);font-family:var(--sans);font-size
         {{SCHEMA_CARDS}}
       </div>
     </div>
-
   </div>
 </div>
 </div>
 
 <script>
-function navCls(id, fieldName = null) {
+function closeDrawerMobile() {
+  if (window.innerWidth <= 1024) {
+    document.getElementById('drawer').classList.remove('open');
+  }
+}
+function openDrawerMobile(e) {
+  if (e) e.preventDefault();
+  if (window.innerWidth <= 1024) {
+    document.getElementById('drawer').classList.add('open');
+  }
+}
+document.getElementById('menu-btn').addEventListener('click', function(e) {
+  e.stopPropagation();
+  openDrawerMobile(e);
+});
+document.addEventListener('click', function(e) {
+  if (window.innerWidth <= 1024) {
+    const drawer = document.getElementById('drawer');
+    if (drawer.classList.contains('open') && !drawer.contains(e.target)) {
+      closeDrawerMobile();
+    }
+  }
+});
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 1024) {
+    document.getElementById('drawer').classList.remove('open');
+  }
+});
+
+function navCls(id, fieldName) {
     showSec('schema');
-    
-    setTimeout(() => {
+    closeDrawerMobile();
+
+    requestAnimationFrame(() => {
         const el = document.getElementById('card-' + id);
         if (!el) return;
 
@@ -285,13 +401,22 @@ function navCls(id, fieldName = null) {
         el.style.display = '';
         el.classList.add('open', 'highlight-card');
 
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        void el.offsetHeight;
 
-        if (fieldName) {
-            const row = el.querySelector(`tr[data-field="${fieldName}"]`);
-            if (row) row.classList.add('highlight-row');
+        if (!fieldName) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
         }
-    }, 150);
+
+        const row = el.querySelector('tr[data-field="' + fieldName + '"]');
+        if (row) {
+            row.classList.add('highlight-row');
+            void row.offsetHeight;
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -299,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const m = p.get('module'), c = p.get('class'), f = p.get('field');
     if (m && c) {
         const slug = (m + '__' + c).replace(/[^a-zA-Z0-9_]/g, '_');
-        setTimeout(() => navCls(slug, f), 500);
+        navCls(slug, f);
     }
 });
 
