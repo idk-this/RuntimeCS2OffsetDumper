@@ -272,127 +272,92 @@ body{background:var(--bg);color:var(--on-surf);font-family:var(--sans);font-size
 </div>
 
 <script>
-/* ── section switch ── */
-function showSec(s){
-  const isSch = s==='schema';
-  document.getElementById('sec-globals').classList.toggle('hidden',isSch);
-  document.getElementById('sec-schema').classList.toggle('hidden',!isSch);
-  document.getElementById('top-title').textContent = isSch?'Schema Classes':'Global Offsets';
-  document.getElementById('ni-globals').classList.toggle('active',!isSch);
-  document.getElementById('ni-schema').classList.toggle('active',isSch);
-  document.getElementById('mod-chips').style.display = isSch?'':'none';
-  if(isSch) updRc();
-}
-
-/* ── nav to class ── */
-function navCls(id){
-  showSec('schema');
-  const card=document.getElementById('card-'+id);
-  if(!card)return;
-  card.classList.add('open');
-  setTimeout(()=>{
-    card.scrollIntoView({behavior:'smooth',block:'center'});
-    card.classList.add('highlighted');
-    setTimeout(()=>card.classList.remove('highlighted'),2500);
-  },80);
-}
-
-/* ── drawer search ── */
-document.getElementById('nav-search').addEventListener('input',function(){
-  const q=this.value.toLowerCase();
-  document.querySelectorAll('#cls-nav .ni').forEach(n=>{
-    n.style.display=(n.dataset.cls||'').toLowerCase().includes(q)?'':'none';
-  });
-});
-
-/* ── card toggle ── */
-function tog2(card){card.classList.toggle('open');}
-
-/* ── module filter ── */
-function filterMod(btn){
-  document.querySelectorAll('.chips .chip').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  const m=btn.dataset.mod;
-  document.querySelectorAll('#cards .card').forEach(c=>{
-    c.style.display=(m==='all'||c.dataset.mod===m)?'':'none';
-  });
-  updRc();
-}
-
-/* ── schema search ── */
-function flt(){
-  const q=document.getElementById('ss').value.toLowerCase();
-  document.querySelectorAll('#cards .card').forEach(card=>{
-    if(!q){card.style.display='';return;}
-    let hit=(card.dataset.cls||'').toLowerCase().includes(q);
-    if(!hit) card.querySelectorAll('tr[data-field]').forEach(r=>{
-      if((r.dataset.field||'').toLowerCase().includes(q)||(r.dataset.type||'').toLowerCase().includes(q)) hit=true;
-    });
-    card.style.display=hit?'':'none';
-  });
-  updRc();
-}
-function updRc(){
-  const v=document.querySelectorAll('#cards .card:not([style*="display: none"])').length;
-  const t=document.querySelectorAll('#cards .card').length;
-  document.getElementById('rc').textContent=v===t?t+' classes':v+'/'+t+' classes';
-}
-
-/* ── copy menus ── */
-function tog(btn){
-  const m=btn.nextElementSibling;
-  const wasOpen=m.classList.contains('open');
-  cls();
-  if(!wasOpen)m.classList.add('open');
-}
-function cls(){document.querySelectorAll('.cm.open').forEach(m=>m.classList.remove('open'));}
-document.addEventListener('click',e=>{if(!e.target.closest('.cmw'))cls();});
-
-/* ── copy ── */
-let stmr;
-function cp(btn,text,label){
-  navigator.clipboard.writeText(text).then(()=>{
-    if(btn){btn.classList.add('ok');setTimeout(()=>btn.classList.remove('ok'),1200);}
-    const sb=document.getElementById('snack');
-    document.getElementById('snack-txt').textContent='Copied: '+label;
-    sb.classList.add('show');
-    clearTimeout(stmr);
-    stmr=setTimeout(()=>sb.classList.remove('show'),2000);
-  });
-}
 function navCls(id, fieldName = null) {
-    const el = document.getElementById('card-' + id);
-    if (!el) return;
+    showSec('schema');
     
-    // Reset previous highlights
-    document.querySelectorAll('.highlight-card').forEach(c => c.classList.remove('highlight-card'));
-    document.querySelectorAll('.highlight-row').forEach(r => r.classList.remove('highlight-row'));
+    setTimeout(() => {
+        const el = document.getElementById('card-' + id);
+        if (!el) return;
 
-    // Show card if filtered
-    el.style.display = '';
-    el.classList.add('highlight-card');
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('highlight-card'));
+        document.querySelectorAll('tr').forEach(r => r.classList.remove('highlight-row'));
 
-    if (fieldName) {
-        const row = el.querySelector(`tr[data-field="${fieldName}"]`);
-        if (row) row.classList.add('highlight-row');
-    }
+        el.style.display = '';
+        el.classList.add('open', 'highlight-card');
+
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        if (fieldName) {
+            const row = el.querySelector(`tr[data-field="${fieldName}"]`);
+            if (row) row.classList.add('highlight-row');
+        }
+    }, 150);
 }
-updRc();
+
 document.addEventListener('DOMContentLoaded', () => {
     const p = new URLSearchParams(window.location.search);
-    const m = p.get('module');
-    const c = p.get('class');
-    const f = p.get('field');
-
+    const m = p.get('module'), c = p.get('class'), f = p.get('field');
     if (m && c) {
-        // Создаем такой же Slug, как в C++: заменяем всё кроме букв/цифр на '_'
         const slug = (m + '__' + c).replace(/[^a-zA-Z0-9_]/g, '_');
-        // Задержка нужна, чтобы браузер успел отрендерить DOM
         setTimeout(() => navCls(slug, f), 500);
     }
 });
 
+function showSec(s){
+    const isSch = s === 'schema';
+    document.getElementById('sec-globals').classList.toggle('hidden', isSch);
+    document.getElementById('sec-schema').classList.toggle('hidden', !isSch);
+    document.getElementById('top-title').textContent = isSch ? 'Schema Classes' : 'Global Offsets';
+    document.getElementById('ni-globals').classList.toggle('active', !isSch);
+    document.getElementById('ni-schema').classList.toggle('active', isSch);
+    document.getElementById('mod-chips').style.display = isSch ? '' : 'none';
+    if(isSch) updRc();
+}
+
+function tog2(card){ card.classList.toggle('open'); }
+function filterMod(btn){
+    document.querySelectorAll('.chips .chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const m = btn.dataset.mod;
+    document.querySelectorAll('#cards .card').forEach(c => {
+        c.style.display = (m === 'all' || c.dataset.mod === m) ? '' : 'none';
+    });
+    updRc();
+}
+function flt(){
+    const q = document.getElementById('ss').value.toLowerCase();
+    document.querySelectorAll('#cards .card').forEach(card => {
+        if(!q){ card.style.display = ''; return; }
+        let hit = (card.dataset.cls || '').toLowerCase().includes(q);
+        if(!hit) card.querySelectorAll('tr[data-field]').forEach(r => {
+            if((r.dataset.field || '').toLowerCase().includes(q) || (r.dataset.type || '').toLowerCase().includes(q)) hit = true;
+        });
+        card.style.display = hit ? '' : 'none';
+    });
+    updRc();
+}
+function updRc(){
+    const v = document.querySelectorAll('#cards .card:not([style*="display: none"])').length;
+    const t = document.querySelectorAll('#cards .card').length;
+    document.getElementById('rc').textContent = v === t ? t + ' classes' : v + '/' + t + ' classes';
+}
+function tog(btn){
+    const m = btn.nextElementSibling;
+    const wasOpen = m.classList.contains('open');
+    cls();
+    if(!wasOpen) m.classList.add('open');
+}
+function cls(){ document.querySelectorAll('.cm.open').forEach(m => m.classList.remove('open')); }
+document.addEventListener('click', e => { if(!e.target.closest('.cmw')) cls(); });
+function cp(btn, text, label){
+    navigator.clipboard.writeText(text).then(() => {
+        if(btn){ btn.classList.add('ok'); setTimeout(() => btn.classList.remove('ok'), 1200); }
+        const sb = document.getElementById('snack');
+        document.getElementById('snack-txt').textContent = 'Copied: ' + label;
+        sb.classList.add('show');
+        setTimeout(() => sb.classList.remove('show'), 2000);
+    });
+}
 </script>
 </body>
 </html>
