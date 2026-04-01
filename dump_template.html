@@ -100,19 +100,13 @@ body{background:var(--bg);color:var(--on-surf);font-family:var(--sans);font-size
   }
 }
 @media (max-width: 1024px) {
-  .gt, .ft {
-    display: block;
+  .card .cb, .card > div {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-  .gt thead, .ft thead {
-    display: table;
+  .gt, .ft {
+    table-layout: auto;
     width: 100%;
-  }
-  .gt tbody tr, .ft tbody tr {
-    display: table-row;
-  }
-  .gt tbody td, .ft tbody td, .gt th, .ft th {
     white-space: nowrap;
   }
 }
